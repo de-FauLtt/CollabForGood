@@ -24,6 +24,9 @@ export default function App() {
   const [orgType, setOrgType] = useState('');
   const [ngoLocation, setNgoLocation] = useState('');
   const [ngoPhoneNumber, setNgoPhoneNumber] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
+  const [emailError, setEmailError] = useState('');
 
   // State for Donor form fields
   const [donorName, setDonorName] = useState('');
@@ -52,6 +55,9 @@ export default function App() {
   const handleNgoSubmit =  async (e) => {
     e.preventDefault();
     // Handle NGO sign-up logic here
+    setErrorMessage('');
+    setSuccessMessage('');
+    setEmailError('');
     try {
     const response = await fetch("http://localhost:5000/api/auth/ngo-signup", {
       method: "POST",
@@ -67,6 +73,21 @@ export default function App() {
     });
 
     const data = await response.json();
+
+    if (response.status==409) {
+      alert("An account with this email exists")
+      return;
+    }
+
+    if (!response.ok) {
+      setErrorMessage(data.error || 'Registration failed');
+      return;
+    }
+
+    if (data.success) {
+      setSuccessMessage('NGO registered successfully!');
+      // Redirect or clear form
+    }
     console.log(data);
     alert("NGO registered successfully!");
   } catch (error) {
