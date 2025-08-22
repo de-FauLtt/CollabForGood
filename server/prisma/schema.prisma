@@ -1,7 +1,7 @@
 // schema.prisma
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL") // Supabase connection string
+  url      = env("DATABASE_URL")
 }
 
 generator client {
@@ -10,14 +10,14 @@ generator client {
 
 // NGO Model
 model NGO {
-  id           String   @id @default(cuid())
-  name         String
-  email        String   @unique
-  password     String
-  orgType      String
-  location     String
-  phoneNumber  String
-  createdAt    DateTime @default(now())
+  id          String   @id @default(cuid())
+  name        String
+  email       String   @unique
+  password    String
+  orgType     String
+  location    String
+  phoneNumber String
+  createdAt   DateTime @default(now())
 }
 
 // Donor Model
@@ -27,4 +27,12 @@ model Donor {
   email     String   @unique
   password  String
   createdAt DateTime @default(now())
+}
+
+// User Model (the new table)
+model User {
+  id       Int    @id @default(autoincrement())
+  email    String @unique
+  password String
+  role     String // "donor" or "ngo"
 }

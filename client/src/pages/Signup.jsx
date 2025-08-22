@@ -10,7 +10,7 @@ import {
   LucideHandshake,
   LucideStar,
 } from 'lucide-react';
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 // Main App component for the combined sign-up page
 export default function App() {
@@ -32,6 +32,8 @@ export default function App() {
   const [donorName, setDonorName] = useState('');
   const [donorEmail, setDonorEmail] = useState('');
   const [donorPassword, setDonorPassword] = useState('');
+
+  const navigate = useNavigate();
 
   const orgTypes = [
     'Select Organization Type',
@@ -84,21 +86,31 @@ export default function App() {
       return;
     }
 
-    if (data.success) {
+    if (data.token && data.role) {
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('userRole', data.role);
       setSuccessMessage('NGO registered successfully!');
-      // Redirect or clear form
+      // TODO: Redirect to the NGO dashboard
+    } else {
+      // This handles cases where success is true but token is missing
+      setSuccessMessage('Registration successful, but token was not received.');
     }
+    navigate('/ngo-dashboard');
     console.log(data);
-    alert("NGO registered successfully!");
+    // alert("NGO registered successfully!");
   } catch (error) {
     console.error(error);
-    alert("NGO signup failed.");
+    setErrorMessage('NGO signup failed. Please try again.');
+    // alert("NGO signup failed.");
   }
 };
 
   const handleDonorSubmit = async (e) => {
     e.preventDefault();
     // Handle Donor sign-up logic here
+    setErrorMessage('');
+    setSuccessMessage('');
+    setEmailError('');
     try {
     const response = await fetch("http://localhost:5000/api/auth/donor-signup", {
       method: "POST",
@@ -111,11 +123,32 @@ export default function App() {
     });
 
     const data = await response.json();
+
+    if (response.status==409) {
+      alert("An account with this email exists")
+      return;
+    }
+
+    if (!response.ok) {
+      setErrorMessage(data.error || 'Registration failed');
+      return;
+    }
+
+    if (data.token && data.role) {
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('userRole', data.role);
+      setSuccessMessage('Donor registered successfully!');
+      // TODO: Redirect to the Donor dashboard
+    } else {
+      setSuccessMessage('Registration successful, but token was not received.');
+    }
+    navigate('/donor-dashboard');
     console.log(data);
-    alert("Donor registered successfully!");
+    // alert("Donor registered successfully!");
   } catch (error) {
     console.error(error);
-    alert("Donor signup failed.");
+    setErrorMessage('Donor signup failed. Please try again.');
+    // alert("Donor signup failed. Please try again.");
   }
 };
 
