@@ -318,7 +318,7 @@ export default function Login() {
             </button>
             <p className="mt-4 text-gray-600">
               New to our platform? <Link 
-              to="/signup" 
+              to="/" 
               className={isNgo ? linkNgoColor : donorColorClass + " font-semibold hover:underline"}
             >
               Sign up here
